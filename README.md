@@ -21,6 +21,26 @@ JavaScript: no libraries, no frameworks, no `eval()`.
   distance calculation, the distance table, neighbour lists, core/border/noise
   labels and the final clusters, one screen at a time
 
+## What is DBSCAN?
+DBSCAN (Density-Based Spatial Clustering of Applications with Noise) groups
+points that are packed closely together and marks points in sparse regions as
+noise. It needs two settings: `eps` (how close points must be to count as
+neighbours) and `MinPts` (how many neighbours make a region dense).
+
+- **Core point:** has at least `MinPts` points (itself included) within distance `eps`
+- **Border point:** not a core point, but within `eps` of a core point
+- **Noise:** neither of the above
+
+Unlike k-means, it does not need the number of clusters in advance, it can find
+clusters of any shape, and it flags outliers. It is commonly used for grouping
+geographic locations, spotting anomalies and exploring unlabeled data.
+
+## Try it
+Click **Load sample dataset** on the demo page (8 points, Euclidean distance,
+`eps = 1.5`, `MinPts = 3`). Expected result: Cluster 1 = A B C H, Cluster 2 =
+D E F, Noise = G, and H is a border point. For 2-D data a scatter plot of the
+clusters appears next to the calculator.
+
 ## Using DBSCAN mode
 1. Press `MODE`, then `9` (DBSCAN)
 2. Choose the distance method (1 Manhattan, 2 Euclidean)
@@ -39,7 +59,9 @@ JavaScript: no libraries, no frameworks, no `eval()`.
 | `js/modes.js` | Step-by-step wizard modes (STAT, MATRIX, EQN, ...) |
 | `js/keys.js` | Keyboard layout |
 | `js/app.js` | State, key handling and rendering |
+| `js/plot.js` | SVG scatter plot of the clusters |
 | `test/dbscan.test.js` | Unit tests for DBSCAN and the point parser |
+| `test/compare_sklearn.py` | Cross-check against scikit-learn |
 
 ## Run and test
 Open `index.html` in a browser. To run the tests (Node 18+):
@@ -47,6 +69,15 @@ Open `index.html` in a browser. To run the tests (Node 18+):
 ```
 node test/dbscan.test.js
 ```
+
+## Verification
+- `node test/dbscan.test.js` runs the unit tests: distances, a hand-checked
+  example, border and noise points, `MinPts = 1`, duplicate points, the `eps`
+  boundary, Euclidean vs Manhattan, 3-D points and input handling.
+- `python test/compare_sklearn.py` compares the results with scikit-learn on
+  300 random datasets (both distance metrics). It checks core points, noise
+  points and how the core points are grouped. Border points are not compared,
+  because a border point can legitimately join either neighbouring cluster.
 
 ## Notes
 - MinPts counts the point itself (the standard DBSCAN definition).

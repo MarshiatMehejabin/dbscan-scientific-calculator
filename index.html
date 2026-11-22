@@ -3,12 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Scientific calculator with a step-by-step DBSCAN clustering mode, built with vanilla JavaScript.">
   <title>DBSCAN Scientific Calculator</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <div class="calc">
-   <div class="brand">SCI-CALC <small>fx-991ES style &middot; DBSCAN edition</small></div>
+    <div class="brand">SCI-CALC <small>fx-991ES style &middot; DBSCAN edition</small></div>
     <div class="display">
       <div class="status" id="status"></div>
       <div class="expr" id="expr"></div>
@@ -17,10 +18,16 @@
     <div class="top" id="top"></div>
     <div class="bottom" id="bottom"></div>
   </div>
+  <div class="side">
+    <button id="sample" type="button">Load sample dataset</button>
+    <p class="hint">Or press MODE, then 9, to enter your own points.</p>
+    <div id="plot"></div>
+  </div>
   <script src="js/parser.js"></script>
   <script src="js/dbscan.js"></script>
   <script src="js/modes.js"></script>
   <script src="js/keys.js"></script>
+  <script src="js/plot.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

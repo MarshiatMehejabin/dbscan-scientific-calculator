@@ -52,6 +52,33 @@ test('undo removes the last point; finishing needs 2 points', () => {
   assert.throws(() => m.submit(''), /at least 2/);
 });
 
+test('MinPts = 1 makes every point a core point', () => {
+  const r = solveDBSCAN({ points: parsePoints(DATA), eps: 1.5, minPts: 1, method: 2 });
+  assert.strictEqual(r.clusters, 3);
+  assert.ok(r.type.every((t) => t === 'C*'));
+});
+
+test('duplicate points with eps = 0', () => {
+  const r = solveDBSCAN({ points: parsePoints('A(1,1),B(1,1),C(5,5)'), eps: 0, minPts: 2, method: 2 });
+  assert.deepStrictEqual(r.labels, [1, 1, 0]);
+});
+
+test('a point exactly eps away counts as a neighbour', () => {
+  const r = solveDBSCAN({ points: parsePoints('A(0,0),B(1,0)'), eps: 1, minPts: 2, method: 2 });
+  assert.strictEqual(r.clusters, 1);
+});
+
+test('Manhattan and Euclidean can disagree', () => {
+  const P = parsePoints('A(0,0),B(1,1)');
+  assert.strictEqual(solveDBSCAN({ points: P, eps: 1.5, minPts: 2, method: 2 }).clusters, 1);
+  assert.strictEqual(solveDBSCAN({ points: P, eps: 1.5, minPts: 2, method: 1 }).clusters, 0);
+});
+
+test('3-D points work too', () => {
+  const r = solveDBSCAN({ points: parsePoints('A(0,0,0),B(1,1,1),C(9,9,9)'), eps: 2, minPts: 2, method: 2 });
+  assert.deepStrictEqual(r.type, ['C*', 'C*', 'N']);
+});
+
 test('bad input is rejected, not silently skipped', () => {
   assert.throws(() => parsePoints('A(1,1),B(2,x)'), /Bad point/);
   assert.throws(() => parsePoints('A(1,1),A(2,2)'), /Duplicate/);

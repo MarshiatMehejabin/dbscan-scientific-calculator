@@ -2,6 +2,27 @@ const exprEl = document.getElementById("expr");
 const resEl = document.getElementById("result");
 const statEl = document.getElementById("status");
 const displayEl = document.querySelector(".display");
+const plotEl = document.getElementById("plot");
+
+// scatter plot under the calculator, only on the DBSCAN result screens (2-D data)
+function updatePlot() {
+  const show = modeName === "DBSCAN" && wiz && wiz.state === "RESULT" && !inMenu && wiz.points[0].c.length === 2;
+  plotEl.innerHTML = show ? plotClusters(wiz.points, wiz.result) : "";
+}
+
+// sample data so visitors can try the DBSCAN mode immediately
+const SAMPLE = { points: "A(1,1),B(2,1),C(2,2),D(8,8),E(8,9),F(9,8),G(25,25),H(3.4,2)", eps: "1.5", minPts: "3" };
+function loadSample() {
+  inMenu = false; popup = null; ask = null; items = []; cur = 0; wizError = "";
+  switchMode("DBSCAN");
+  wiz.ac();                                   // start from the method menu
+  wiz.submit("2");                            // Euclidean
+  wiz.submit(SAMPLE.points);
+  wiz.submit(SAMPLE.eps);
+  wiz.submit(SAMPLE.minPts);
+  render();
+}
+document.getElementById("sample").onclick = loadSample;
 
 // ---------- state ----------
 let items = [];          // expression pieces: ["sin(", "3", "0", ")"]
@@ -363,6 +384,7 @@ function equals() {
 
 // ---------- render ----------
 function render() {
+  updatePlot();
   document.getElementById("btnShift").classList.toggle("on", shift);
   document.getElementById("btnAlpha").classList.toggle("on", alpha);
   displayEl.classList.toggle("mini", inMenu || modeName !== "COMP" || !!popup || !!ask);
