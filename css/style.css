@@ -41,6 +41,7 @@ button:focus-visible { outline:2px solid #f2c230; outline-offset:1px; }
                       word-break:break-all; overflow-x:hidden; overflow-y:auto; }
 .display.mini .result { display:none; }
 .err { color:#a00; font-weight:bold; }
+.display.off { background:#9ea596; }
 
 /* side panel: sample button + cluster plot */
 .side { width:100%; max-width:380px; }

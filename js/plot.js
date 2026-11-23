@@ -12,16 +12,19 @@ function plotClusters(points, res) {
   const safe = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;");
   const xs = points.map((p) => p.c[0]), ys = points.map((p) => p.c[1]);
   const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
-  const sx = (x) => M + (x1 === x0 ? (W - 2 * M) / 2 : ((x - x0) / (x1 - x0)) * (W - 2 * M));
-  const sy = (y) => H - M - (y1 === y0 ? (H - 2 * M) / 2 : ((y - y0) / (y1 - y0)) * (H - 2 * M));
+  const pw = W - 2 * M, ph = H - 2 * M;
+  // same scale on both axes, so distances (and eps) look right
+  const k = Math.min(pw / (x1 - x0 || 1), ph / (y1 - y0 || 1));
+  const sx = (x) => M + (pw - (x1 - x0) * k) / 2 + (x - x0) * k;
+  const sy = (y) => H - M - (ph - (y1 - y0) * k) / 2 - (y - y0) * k;
 
   let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="DBSCAN cluster plot">`;
   s += `<rect x="${M}" y="${M}" width="${W - 2 * M}" height="${H - 2 * M}" fill="#fafafa" stroke="#bbb"/>`;
   s += `<g font-size="10" fill="#555">` +
-    `<text x="${M}" y="${H - M + 14}" text-anchor="middle">${num(x0)}</text>` +
-    `<text x="${W - M}" y="${H - M + 14}" text-anchor="middle">${num(x1)}</text>` +
-    `<text x="${M - 6}" y="${H - M + 3}" text-anchor="end">${num(y0)}</text>` +
-    `<text x="${M - 6}" y="${M + 3}" text-anchor="end">${num(y1)}</text></g>`;
+    `<text x="${sx(x0)}" y="${H - M + 14}" text-anchor="middle">${num(x0)}</text>` +
+    `<text x="${sx(x1)}" y="${H - M + 14}" text-anchor="middle">${num(x1)}</text>` +
+    `<text x="${M - 6}" y="${sy(y0) + 3}" text-anchor="end">${num(y0)}</text>` +
+    `<text x="${M - 6}" y="${sy(y1) + 3}" text-anchor="end">${num(y1)}</text></g>`;
 
   points.forEach((p, i) => {
     const x = sx(p.c[0]), y = sy(p.c[1]), lab = res.labels[i], t = res.type[i];

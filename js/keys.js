@@ -9,7 +9,7 @@ const TOP_KEYS = [
   K("ALPHA", "@ALPHA", "", null, "", null, "sil"),
   null,
   K("MODE", "@MODE", "SETUP", "@ANGLE", "", null, "sil"),
-  K("ON", "@AC", "", null, "", null, "sil"),
+  K("ON", "@ON", "", null, "", null, "sil"),
 
   K("CALC", "@CALC", "SOLVE", "@SOLVE"),
   K("∫▫", "Int(", "d/dx", "dydx(", ":", null),
@@ -44,7 +44,7 @@ const BOTTOM_KEYS = [
   K("8", "8", "CONV", "@CONV", "", null, "n"),
   K("9", "9", "CLR", "@CLR", "", null, "n"),
   K("DEL", "@DEL", "INS", "@INS", "", null, "g"),
-  K("AC", "@AC", "OFF", "@AC", "", null, "g"),
+  K("AC", "@AC", "OFF", "@OFF", "", null, "g"),
 
   K("4", "4", "MATRIX", "@GO:MATRIX", "", null, "n"),
   K("5", "5", "VECTOR", "@GO:VECTOR", "", null, "n"),

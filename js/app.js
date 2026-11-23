@@ -11,8 +11,9 @@ function updatePlot() {
 }
 
 // sample data so visitors can try the DBSCAN mode immediately
-const SAMPLE = { points: "A(1,1),B(2,1),C(2,2),D(8,8),E(8,9),F(9,8),G(25,25),H(3.4,2)", eps: "1.5", minPts: "3" };
+const SAMPLE = { points: "A(1,1),B(2,1),C(2,2),D(8,8),E(8,9),F(9,8),G(13,3),H(3.4,2)", eps: "1.5", minPts: "3" };
 function loadSample() {
+  if (off) turnOn();
   inMenu = false; popup = null; ask = null; items = []; cur = 0; wizError = "";
   switchMode("DBSCAN");
   wiz.ac();                                   // start from the method menu
@@ -43,6 +44,7 @@ let wiz = null;          // DbscanMode or Wizard instance (null in COMP)
 let wizError = "";
 let popup = null;        // small pick-a-number menu (CONST, CONV, DRG▸)
 let ask = null;          // CALC / SOLVE waiting for a value of X
+let off = false;         // SHIFT + AC turns the calculator off, ON turns it on
 let overwrite = false;   // INS key toggles insert / overwrite
 let engExp = null;       // current exponent for the ENG key
 
@@ -122,7 +124,9 @@ function leaveResultMode() {
 
 // ---------- main key handler ----------
 function press(key) {
+  if (off) { if (key.c === "@ON") turnOn(); return; }   // switched off: only ON works
   let cmd = key.c;
+  if (cmd === "@ON") return turnOn();
 
   // 1. SHIFT / ALPHA toggles
   if (cmd === "@SHIFT") { shift = !shift; alpha = false; return render(); }
@@ -145,6 +149,7 @@ function press(key) {
   else if (alpha) cmd = key.ac;
   shift = alpha = false;
   if (cmd == null || cmd === "") return render();
+  if (cmd === "@OFF") return turnOff();
 
   // 4. MODE key and mode-specific handlers
   if (cmd === "@MODE") { inMenu = true; pending = null; hyp = false; ask = null; popup = null; return render(); }
@@ -174,6 +179,26 @@ function menuKey(cmd) {
   } else if (cmd === "@AC") {
     inMenu = false;                       // cancel
   }
+  render();
+}
+
+// SHIFT + AC: screen goes blank and every key is dead except ON
+function turnOff() {
+  off = true;
+  shift = alpha = hyp = false; pending = null; popup = null; ask = null; inMenu = false;
+  clearTimeout(flashTimer);
+  render();
+}
+// ON: wake up with everything cleared: expression, history, memory, Ans, and back to COMP mode
+function turnOn() {
+  off = false;
+  items = []; cur = 0; justEval = false; lastResult = null; fracMode = false; engExp = null;
+  history = []; hIdx = 0; overwrite = false; wizError = "";
+  shift = alpha = hyp = false; pending = null; popup = null; ask = null; inMenu = false;
+  Object.keys(Calc.vars).forEach(k => Calc.vars[k] = 0);
+  Calc.ans = 0;
+  wiz = null; modeName = "COMP";
+  resEl.textContent = "0";
   render();
 }
 
@@ -387,6 +412,11 @@ function render() {
   updatePlot();
   document.getElementById("btnShift").classList.toggle("on", shift);
   document.getElementById("btnAlpha").classList.toggle("on", alpha);
+  displayEl.classList.toggle("off", off);
+  if (off) {                              // switched off: blank screen
+    exprEl.textContent = ""; resEl.textContent = ""; statEl.textContent = ""; plotEl.innerHTML = "";
+    return;
+  }
   displayEl.classList.toggle("mini", inMenu || modeName !== "COMP" || !!popup || !!ask);
 
   if (inMenu) {
