@@ -8,7 +8,7 @@ JavaScript: no libraries, no frameworks, no `eval()`.
 
 **Live demo:** https://marshiatmehejabin.github.io/dbscan-scientific-calculator/
 
-![screenshot](docs/screenshot.png)
+![screenshot](docs/Screenshot.png)
 
 ## Features
 - Custom recursive-descent expression parser: operator precedence, implicit
